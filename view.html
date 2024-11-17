@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Wishes</title>
+    
+    <!-- Link to your external CSS file -->
+    <link rel="stylesheet" href="stylesheet.css">
+</head>
+<body>
+    <header>
+        <h1>All Wishes</h1>
+    </header>
+
+    <main>
+        <section id="wish-list">
+            <ul id="wishList">
+                <!-- Wishes will be dynamically added here -->
+            </ul>
+        </section>
+
+        <!-- Link to navigate back to the wish-posting page -->
+        <a href="index.html">Click here to Post a Wish</a>
+    </main>
+
+    <footer>
+        <p>Made with ❤️ by Wish Sharing Hub</p>
+    </footer>
+
+    <!-- Inline JavaScript -->
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            // Initialize Supabase client
+            const supabaseUrl = 'https://flmjzqkosrkmdhfasgcn.supabase.co'; // Replace with your Supabase URL
+            const supabaseKey = 'your-anon-key'; // Replace with your actual anon key
+            const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+            // Function to fetch and display wishes
+            async function fetchWishes() {
+                try {
+                    // Fetch all wishes from the 'Wishes' table
+                    const { data, error } = await supabase
+                        .from('Wishes')
+                        .select('*'); // Select all columns from the table
+
+                    if (error) throw error; // Log any errors
+
+                    const wishList = document.getElementById("wishList");
+
+                    // Handle the case where there are no wishes
+                    if (!data || data.length === 0) {
+                        wishList.innerHTML = "<p>No wishes found.</p>";
+                        return;
+                    }
+
+                    // Populate the wish list dynamically
+                    data.forEach(wish => {
+                        const listItem = document.createElement("li"); // Create a list item for each wish
+                        listItem.innerHTML = `
+                            <h2>${wish.Title}</h2>
+                            <p>${wish.description || "No description provided."}</p> <!-- Matches the database column -->
+                            <p><em>${wish.Name ? `By: ${wish.Name}` : "Anonymous"}</em></p>
+                        `;
+                        wishList.appendChild(listItem);
+                    });
+                } catch (error) {
+                    console.error("Error fetching wishes:", error);
+                    const wishList = document.getElementById("wishList");
+                    wishList.innerHTML = "<p>Unable to load wishes. Please try again later.</p>";
+                }
+            }
+
+            // Fetch and display wishes when the page loads
+            fetchWishes();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post a Wish</title>
+
+    <!-- Link to external CSS file -->
+    <link rel="stylesheet" href="stylesheet.css">
+
+    <!-- Supabase JS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.21.0/dist/umd/supabase.min.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Post Your Wish</h1>
+    </header>
+
+    <main>
+        <section id="wish-form">
+            <form id="wishForm">
+                <!-- Input for user's name -->
+                <label for="name">Your Name (optional):</label>
+                <input type="text" id="name" placeholder="Your Name (optional)">
+
+                <!-- Input for wish title -->
+                <label for="title">Your Wish Title:</label>
+                <input type="text" id="title" placeholder="Your Wish Title" required>
+
+                <!-- Textarea for wish description -->
+                <label for="description">Describe Your Wish:</label>
+                <textarea id="description" placeholder="Describe your wish"></textarea>
+
+                <!-- Submit button -->
+                <button type="submit">Submit Wish</button>
+            </form>
+        </section>
+
+        <!-- Link to view wishes -->
+        <a href="view.html">Click here to View Wishes</a>
+    </main>
+
+    <footer>
+        <p>Made with ❤️ by Wish Sharing Hub</p>
+    </footer>
+
+    <!-- Inline JavaScript -->
+    <script>
+        // Initialize Supabase client
+        const supabaseUrl = 'https://flmjzqkosrkmdhfasgcn.supabase.co'; // Replace with your Supabase URL
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZsbWp6cWtvc3JrbWRoZmFzZ2NuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzE3NzU4MDYsImV4cCI6MjA0NzM1MTgwNn0._JpJS0HjbvQDi88LNN48oUwub2XLIKrGd5kGxE1Mm_c'; // Replace with your actual anon key
+        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+        // Wait for the DOM to load
+        document.addEventListener("DOMContentLoaded", () => {
+            const form = document.getElementById("wishForm");
+
+            form.addEventListener("submit", async (e) => {
+                e.preventDefault(); // Prevent default form submission
+
+                // Retrieve form input values
+                const name = document.getElementById("name").value;
+                const title = document.getElementById("title").value;
+                const description = document.getElementById("description").value;
+
+                // Insert the data into Supabase
+                const { data, error } = await supabase
+                    .from('Wishes') // Ensure this matches the table name in Supabase
+                    .insert([
+                        { Name: name, Title: title, description: description } // Match column names
+                    ]);
+
+                // Handle success or errors
+                if (error) {
+                    console.error("Error inserting wish:", error);
+                    alert("Failed to post your wish. Please try again.");
+                } else {
+                    alert("Your wish has been posted successfully!");
+                    form.reset(); // Clear the form after successful submission
+                   
+                }
+            });
+        });
+    </script>
+</body>
+</html>
